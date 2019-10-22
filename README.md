@@ -1,5 +1,4 @@
-##Double pound header telling you how amazing this code is yes
-
-# Single pund header is it bigger or smaller?
+##Our first turnin in DataLagring
+This is an amazing application, it contains no garbage file from a movie about Ellingson :)
 
 
