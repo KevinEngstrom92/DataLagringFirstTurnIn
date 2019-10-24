@@ -10,6 +10,7 @@ namespace DataLagringFörstaInlämning
     {
         static void Main(string[] args)
         {
+         
             bool shouldRun = true;
             SqlClass.GetAllReservations();
             while (shouldRun) 
@@ -34,6 +35,7 @@ namespace DataLagringFörstaInlämning
                         ListInspections();
                         break;
                     case ConsoleKey.D5:
+                        SqlClass.sqlconn.Close();
                         shouldRun = false;
                         break;
 
@@ -51,7 +53,15 @@ namespace DataLagringFörstaInlämning
 
         private static void ListInspections()
         {
-            throw new NotImplementedException();
+            Console.Clear();
+            SqlClass.GetAllInspections();
+            Console.WriteLine("Registration number:\tPerformedAt:\tIsApproved");
+            Console.WriteLine("--------------------------------------------------");
+            foreach (var inspections in Engine.inspectionList)
+            {
+                Console.WriteLine($"{inspections.RegistrationNumber}\t\t{inspections.PerformedAt}\t\t{inspections.IsApproved}");
+            }
+            Console.ReadKey(true);
         }
 
         private static void CreateReservation()
@@ -91,6 +101,7 @@ namespace DataLagringFörstaInlämning
 
         private static void ConductInspection()
         {
+            Reservation makeAInspection;
             SqlClass.GetAllReservations();
             Console.Clear();
             Console.WriteLine("Registration number: ");
@@ -102,13 +113,33 @@ namespace DataLagringFörstaInlämning
                 if(reservation.RegistrationNumber == regNumber) 
                 {
                     isBooked = true;
+                    makeAInspection = new Reservation(reservation.RegistrationNumber, reservation.Date);
+                    
                     break;
                 }
             }
             if (isBooked) 
             {
                 Console.Clear();
-                Console.WriteLine("There is a booking yes");
+                Console.WriteLine("Was the vehicle accepted? (Y/N)");
+
+                ConsoleKeyInfo input = Console.ReadKey(true);
+                Inspection inspectionPlaceHolder=null;
+                switch (input.Key) 
+                {
+                    case ConsoleKey.Y:
+                        inspectionPlaceHolder = new Inspection(regNumber);
+                        inspectionPlaceHolder.Approve();
+
+                        break;
+                    case ConsoleKey.N:
+                        inspectionPlaceHolder = new Inspection(regNumber);
+                        inspectionPlaceHolder.Failed();
+                        break;
+                }
+                Console.Clear();
+                Console.WriteLine("The Inspections has been made");
+                SqlClass.SaveInspection(inspectionPlaceHolder);
                 Thread.Sleep(2000);
             }
             else 
